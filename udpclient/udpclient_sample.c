@@ -20,6 +20,7 @@
 #include <sys/socket.h> /* 使用BSD socket，需要包含sockets.h头文件 */
 #include <netdb.h>
 #include <string.h>
+#include <finsh.h>
 
 const char send_data[] = "This is UDP Client from RT-Thread.\n"; /* 发送用到的数据 */
 void udpclient(int argc, char **argv)
@@ -77,9 +78,5 @@ void udpclient(int argc, char **argv)
     /* 关闭这个socket */
     closesocket(sock);
 }
-#ifdef FINSH_USING_MSH
-#include <finsh.h>
 
 MSH_CMD_EXPORT(udpclient, a udp client sample);
-#endif
-

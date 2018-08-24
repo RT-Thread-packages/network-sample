@@ -7,20 +7,22 @@
  * Date             Author      Notes
  * 
  */
-/*
- * 程序清单：tcp 客户端
+/* 程序清单：利用 select 实现的 tcp 客户端
  *
- * 这是一个 tcp 客户端的例程
- * 导出 tcpclient 命令到控制终端
- * 命令调用格式：tcpclient URL PORT
+ * 这是一个 利用 select 实现 tcp 客户端的例程
+ * 导出 tcpclient_select 命令到控制终端
+ * 命令调用格式：tcpclient_select URL PORT
  * URL：服务器地址 PORT:：端口号
- * 程序功能：接收并显示从服务端发送过来的信息，接收到开头是 'q' 或 'Q' 的信息退出程序
+ * 程序功能：利用 select 监听 socket 是否有数据到达，
+ * 有数据到达的话再接收并显示从服务端发送过来的信息，
+ * 接收到开头是 'q' 或 'Q' 的信息退出程序
 */
 #include <rtthread.h>
 #include <sys/socket.h> /* 使用BSD socket，需要包含socket.h头文件 */
 #include <netdb.h>
 #include <sys/select.h> /* 使用 dfs select 功能  */
 #include <string.h>
+#include <finsh.h>
 
 #define BUFSZ   1024
 
@@ -169,8 +171,6 @@ void tcpclient_select(int argc, char **argv)
     }
     return;
 }
-#ifdef FINSH_USING_MSH
-#include <finsh.h>
 
 MSH_CMD_EXPORT(tcpclient_select, a tcp client sample by select api);
-#endif
+
