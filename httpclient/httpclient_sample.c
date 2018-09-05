@@ -8,6 +8,7 @@
  * Change Logs: 
  * Date             Author      Notes
  * 2018-07-20     flybreak     first version
+ * 2018-09-05     flybreak     Upgrade API to webclient latest version
  */
 
 #include <webclient.h>  /* 使用 HTTP 协议与服务器通信需要包含此头文件 */
@@ -16,9 +17,11 @@
 #include <cJSON.h>
 #include <finsh.h>
 
-#define BUF_SZ       4096        //缓冲区大小
-#define URL_LEN_MAX  256         //网址最大长度
-#define AREA_ID      "101021300" //上海浦东地区 ID
+#define GET_HEADER_BUFSZ        1024        //头部大小
+#define GET_RESP_BUFSZ          1024        //响应缓冲区大小
+#define GET_URL_LEN_MAX         256         //网址最大长度
+#define GET_URI                 "http://mobile.weather.com.cn/data/sk/%s.html" //获取天气的 API
+#define AREA_ID                 "101021300" //上海浦东地区 ID
 
 /* 天气数据解析 */
 void weather_data_parse(rt_uint8_t *data)
@@ -59,64 +62,76 @@ void weather_data_parse(rt_uint8_t *data)
 }
 void weather(int argc, char **argv)
 {
-    rt_uint8_t *ptr = RT_NULL;
-    int length = 0, result;
+    rt_uint8_t *buffer = RT_NULL;
+    int resp_status;
     struct webclient_session *session = RT_NULL;
     char *weather_url = RT_NULL;
+    int content_length = -1, bytes_read = 0;
+    int content_pos = 0;
 
     /* 为 weather_url 分配空间 */
-    weather_url = rt_calloc(1, URL_LEN_MAX);
-    if (!weather_url)
+    weather_url = rt_calloc(1, GET_URL_LEN_MAX);
+    if (weather_url == RT_NULL)
     {
         rt_kprintf("No memory for weather_url!\n");
         goto __exit;
     }
     /* 拼接 GET 网址 */
-    rt_snprintf(weather_url, URL_LEN_MAX, "http://mobile.weather.com.cn/data/sk/%s.html", AREA_ID);
+    rt_snprintf(weather_url, GET_URL_LEN_MAX, GET_URI, AREA_ID);
 
-    /* 为结构体 webclient_session 分配空间 */
-    session = (struct webclient_session *)rt_calloc(1, sizeof(struct webclient_session));
-    if (!session)
+    /* 创建会话并且设置响应的大小 */
+    session = webclient_session_create(GET_HEADER_BUFSZ);
+    if (session == RT_NULL)
     {
-        rt_kprintf("No memory for session structure!\n");
+        rt_kprintf("No memory for get header!\n");
         goto __exit;
     }
 
-    /* 连接天气网站 */
-    result = webclient_connect(session, weather_url);
-    if (result < 0)
+    /* 发送 GET 请求使用默认的头部 */
+    if ((resp_status = webclient_get(session, weather_url)) != 200)
     {
-        rt_kprintf("Webclient connect URI(%s) failed!\n", weather_url);
+        rt_kprintf("webclient GET request failed, response(%d) error.\n", resp_status);
         goto __exit;
     }
-    /* 发送官方标准 header */
-    result = webclient_send_header(session, WEBCLIENT_GET, RT_NULL, RT_NULL);
-    if (result < 0)
-    {
-        rt_kprintf("Webclient send header buffer failed return %d!", result);
-        goto __exit;
-    }
-    /* 检查响应 */
-    if (webclient_handle_response(session))
-    {
-        if (session->response != 200)
-        {
-            rt_kprintf("webclient handle response(%d) error!", session->response);
-            goto __exit;
-        }
-    }
+
     /* 分配用于存放接收数据的缓冲 */
-    ptr = rt_calloc(1, BUF_SZ);
-    if(!ptr)
+    buffer = rt_calloc(1, GET_RESP_BUFSZ);
+    if(buffer == RT_NULL)
     {
         rt_kprintf("No memory for data receive buffer!\n");
         goto __exit;
     }
 
-    length = webclient_read(session, ptr, BUF_SZ);
-    ptr[length] = '\0';
+    content_length = webclient_content_length_get(session);
+    if (content_length < 0)
+    {
+        /* 返回的数据是分块传输的. */
+        do
+        {
+            bytes_read = webclient_read(session, buffer, GET_RESP_BUFSZ);
+            if (bytes_read <= 0)
+            {
+                break;
+            }
+        } while (1);
+    }
+    else
+    {
+        do
+        {
+            bytes_read = webclient_read(session, buffer, 
+                    content_length - content_pos > GET_RESP_BUFSZ ?
+                            GET_RESP_BUFSZ : content_length - content_pos);
+            if (bytes_read <= 0)
+            {
+                break;
+            }
+            content_pos += bytes_read;
+        } while (content_pos < content_length);
+    }
+
     /* 天气数据解析 */
-    weather_data_parse(ptr);
+    weather_data_parse(buffer);
 
 __exit:
     /* 释放网址空间 */
@@ -126,9 +141,8 @@ __exit:
     if (session != RT_NULL)
         webclient_close(session);
     /* 释放缓冲区空间 */
-    if (ptr != RT_NULL)
-        rt_free(ptr);
+    if (buffer != RT_NULL)
+        rt_free(buffer);
 }
 
 MSH_CMD_EXPORT(weather, Get weather by webclient);
-
