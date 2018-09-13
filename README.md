@@ -4,16 +4,16 @@
 
 这个软件包包含一些网络操作的例程。
 
-### 1.1 目录结构
+### 1.1例程说明
 
-| 目录             | 例程                            |
+| 文件             | 说明                            |
 | ---------------- | ------------------------------- |
-| httpclient       | 创建一个 http 客户端             |
-| tcpclient        | 创建一个 TCP 客户端             |
-| tcpserver        | 创建一个 TCP 服务端             |
-| udpclient        | 创建一个 UDP 客户端             |
-| udpserver        | 创建一个 UDP 服务端             |
-| tcpclient_select | 使用 select 接口实现 TCP 客户端 |
+| httpclient_sample.c       | 创建一个 http 客户端获取天气数据       |
+| tcpclient_sample.c        | 创建一个 TCP 客户端             |
+| tcpserver_sample.c        | 创建一个 TCP 服务端             |
+| udpclient_sample.c        | 创建一个 UDP 客户端             |
+| udpserver_sample.c        | 创建一个 UDP 服务端             |
+| tcpclient_select_sample.c | 使用 select 接口实现 TCP 客户端 |
 
 ### 1.2 许可证
 
