@@ -1,11 +1,11 @@
-/* 
+/*
  * File      : httpclient.c
  *
- * Copyright (c) 2006-2018, RT-Thread Development Team 
- * 
- * SPDX-License-Identifier: Apache-2.0 
- * 
- * Change Logs: 
+ * Copyright (c) 2006-2018, RT-Thread Development Team
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
  * Date             Author      Notes
  * 2018-07-20     flybreak     first version
  * 2018-09-05     flybreak     Upgrade API to webclient latest version
@@ -96,7 +96,7 @@ void weather(int argc, char **argv)
 
     /* 分配用于存放接收数据的缓冲 */
     buffer = rt_calloc(1, GET_RESP_BUFSZ);
-    if(buffer == RT_NULL)
+    if (buffer == RT_NULL)
     {
         rt_kprintf("No memory for data receive buffer!\n");
         goto __exit;
@@ -113,21 +113,21 @@ void weather(int argc, char **argv)
             {
                 break;
             }
-        } while (1);
+        }while (1);
     }
     else
     {
         do
         {
-            bytes_read = webclient_read(session, buffer, 
-                    content_length - content_pos > GET_RESP_BUFSZ ?
-                            GET_RESP_BUFSZ : content_length - content_pos);
+            bytes_read = webclient_read(session, buffer,
+                                        content_length - content_pos > GET_RESP_BUFSZ ?
+                                        GET_RESP_BUFSZ : content_length - content_pos);
             if (bytes_read <= 0)
             {
                 break;
             }
             content_pos += bytes_read;
-        } while (content_pos < content_length);
+        }while (content_pos < content_length);
     }
 
     /* 天气数据解析 */
