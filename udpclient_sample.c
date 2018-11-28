@@ -1,11 +1,11 @@
-/* 
- * Copyright (c) 2006-2018, RT-Thread Development Team 
- * 
- * SPDX-License-Identifier: Apache-2.0 
- * 
- * Change Logs: 
+/*
+ * Copyright (c) 2006-2018, RT-Thread Development Team
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
  * Date             Author      Notes
- * 
+ *
  */
 /*
  * 程序清单：udp 客户端
@@ -13,7 +13,7 @@
  * 这是一个 udp 客户端的例程
  * 导出 udpclient 命令到控制终端
  * 命令调用格式：udpclient URL PORT [COUNT = 10]
- * URL：服务器地址  PORT：端口号  COUNT：可选参数 默认为 10 
+ * URL：服务器地址  PORT：端口号  COUNT：可选参数 默认为 10
  * 程序功能：发送 COUNT 条数据到服务远端
 */
 #include <rtthread.h>

@@ -1,11 +1,11 @@
-/* 
- * Copyright (c) 2006-2018, RT-Thread Development Team 
- * 
- * SPDX-License-Identifier: Apache-2.0 
- * 
- * Change Logs: 
+/*
+ * Copyright (c) 2006-2018, RT-Thread Development Team
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
  * Date             Author      Notes
- * 
+ *
  */
 /* 程序清单：利用 select 实现的 tcp 客户端
  *
@@ -110,63 +110,63 @@ void tcpclient_select(int argc, char **argv)
         if (FD_ISSET(sock, &readset))
         {
             /* 从sock连接中接收最大BUFSZ - 1字节数据 */
-           bytes_received = recv(sock, recv_data, BUFSZ - 1, 0);
-           if (bytes_received < 0)
-           {
-               /* 接收失败，关闭这个连接 */
-               closesocket(sock);
-               rt_kprintf("\nreceived error,close the socket.\r\n");
+            bytes_received = recv(sock, recv_data, BUFSZ - 1, 0);
+            if (bytes_received < 0)
+            {
+                /* 接收失败，关闭这个连接 */
+                closesocket(sock);
+                rt_kprintf("\nreceived error,close the socket.\r\n");
 
-               /* 释放接收缓冲 */
-               rt_free(recv_data);
-               break;
-           }
-           else if (bytes_received == 0)
-           {
-               /* 默认 recv 为阻塞模式，此时收到0认为连接出错，关闭这个连接 */
-               closesocket(sock);
-               rt_kprintf("\nreceived error,close the socket.\r\n");
+                /* 释放接收缓冲 */
+                rt_free(recv_data);
+                break;
+            }
+            else if (bytes_received == 0)
+            {
+                /* 默认 recv 为阻塞模式，此时收到0认为连接出错，关闭这个连接 */
+                closesocket(sock);
+                rt_kprintf("\nreceived error,close the socket.\r\n");
 
-               /* 释放接收缓冲 */
-               rt_free(recv_data);
-               break;
-           }
+                /* 释放接收缓冲 */
+                rt_free(recv_data);
+                break;
+            }
 
-           /* 有接收到数据，把末端清零 */
-           recv_data[bytes_received] = '\0';
+            /* 有接收到数据，把末端清零 */
+            recv_data[bytes_received] = '\0';
 
-           if (strncmp(recv_data, "q", 1) == 0 || strncmp(recv_data, "Q", 1) == 0)
-           {
-               /* 如果是首字母是q或Q，关闭这个连接 */
-               closesocket(sock);
-               rt_kprintf("\n got a 'q' or 'Q',close the socket.\r\n");
+            if (strncmp(recv_data, "q", 1) == 0 || strncmp(recv_data, "Q", 1) == 0)
+            {
+                /* 如果是首字母是q或Q，关闭这个连接 */
+                closesocket(sock);
+                rt_kprintf("\n got a 'q' or 'Q',close the socket.\r\n");
 
-               /* 释放接收缓冲 */
-               rt_free(recv_data);
-               break;
-           }
-           else
-           {
-               /* 在控制终端显示收到的数据 */
-               rt_kprintf("\nReceived data = %s ", recv_data);
-           }
+                /* 释放接收缓冲 */
+                rt_free(recv_data);
+                break;
+            }
+            else
+            {
+                /* 在控制终端显示收到的数据 */
+                rt_kprintf("\nReceived data = %s ", recv_data);
+            }
 
-           /* 发送数据到sock连接 */
-           ret = send(sock, send_data, strlen(send_data), 0);
-           if (ret < 0)
-           {
-               /* 接收失败，关闭这个连接 */
-               closesocket(sock);
-               rt_kprintf("\nsend error,close the socket.\r\n");
+            /* 发送数据到sock连接 */
+            ret = send(sock, send_data, strlen(send_data), 0);
+            if (ret < 0)
+            {
+                /* 接收失败，关闭这个连接 */
+                closesocket(sock);
+                rt_kprintf("\nsend error,close the socket.\r\n");
 
-               rt_free(recv_data);
-               break;
-           }
-           else if (ret == 0)
-           {
-               /* 打印send函数返回值为0的警告信息 */
-               rt_kprintf("\n Send warning,send function return 0.\r\n");
-           }
+                rt_free(recv_data);
+                break;
+            }
+            else if (ret == 0)
+            {
+                /* 打印send函数返回值为0的警告信息 */
+                rt_kprintf("\n Send warning,send function return 0.\r\n");
+            }
         }
     }
     return;
