@@ -84,6 +84,11 @@ void tcpclient(int argc, char **argv)
         rt_free(recv_data);
         return;
     }
+    else
+    {
+        /* 连接成功 */
+        rt_kprintf("Connect successful\n");
+    }
 
     while (1)
     {
