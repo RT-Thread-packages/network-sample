@@ -21,6 +21,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <finsh.h>
+#include <sys/errno.h>
 
 #define BUFSZ       (1024)
 
