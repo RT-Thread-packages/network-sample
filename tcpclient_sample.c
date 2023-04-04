@@ -25,7 +25,7 @@
 #define BUFSZ   1024
 
 static const char send_data[] = "This is TCP Client from RT-Thread."; /* 发送用到的数据 */
-void tcpclient(int argc, char **argv)
+static void tcpclient(int argc, char **argv)
 {
     int ret;
     char *recv_data;

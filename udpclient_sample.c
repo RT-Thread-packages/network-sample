@@ -22,8 +22,8 @@
 #include <string.h>
 #include <finsh.h>
 
-const char send_data[] = "This is UDP Client from RT-Thread.\n"; /* 发送用到的数据 */
-void udpclient(int argc, char **argv)
+static const char send_data[] = "This is UDP Client from RT-Thread.\n"; /* 发送用到的数据 */
+static void udpclient(int argc, char **argv)
 {
     int sock, port, count;
     struct hostent *host;
